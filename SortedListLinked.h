@@ -25,7 +25,7 @@ class SortedListLinked
       SortedListLinked(int (*comp_items) (T* item_1, T* item_2));
       ~SortedListLinked();
       bool isEmpty();
-      int size(); 
+      int size();
       void add(T* item);
       void remove(T* item);  //normally, we would use void remove(String* search_key) here
       T* get(int index);     //normally, we would use T* get(String* search_key)
@@ -60,7 +60,7 @@ SortedListLinked<T>::~SortedListLinked()
       }
 
       head = NULL;
-      delete curr; 
+      delete curr;
    }
 }
 
@@ -101,24 +101,33 @@ NextNode<T>** SortedListLinked<T>::find(T* item)
 {
    NextNode<T>* prev = NULL;
    NextNode<T>* curr = head;
+   NextNode<T>** nodes = new NextNode<T>*[2];
+
 
    //DO THIS
    //loop to find the correct location to insert/remove item
+   while(curr != NULL)
+   {
+       int compare = (*compare_items) (curr->getItem(), item);
+       if(compare < 0)
+       {
+//cout << "1" << endl;
+           prev = curr;
+           curr = curr->getNext();
+//cout << "2" << endl;
+       }
 
+       else
+       {
+           break;
+       }
 
+   }
 
-
-
-
-
-
-
+           nodes[0] = prev;
+           nodes[1] = curr;
    //could simply return prev and compute curr, but prev might be null
    //this way results in somewhat simpler code in add and remove
-   NextNode<T>** nodes = new NextNode<T>*[2];
-   nodes[0] = prev;
-   nodes[1] = curr;
-
    return nodes;
 }
 
@@ -142,19 +151,19 @@ void SortedListLinked<T>::add(T* item)
 
    //DO THIS
    //adding to the top of the list (check prev)
-   if (           )
+   if (prev == NULL)
    {
-
-
-
-
+       NextNode<T>* new_item = new NextNode<T>(item);
+       head = new_item;
+       prev = new_item;
+       new_item->setNext(curr);
    }
    else    //general add
    {
+       NextNode<T>* new_item = new NextNode<T>(item);
 
-
-
-
+       prev->setNext(new_item);
+       new_item->setNext(curr);
    }
 
    sze++;
@@ -180,37 +189,32 @@ void SortedListLinked<T>::remove(T* item)
 
    if (curr == NULL)
    {
-      return;  //item not present
+       return;  //item not present
    }
 
-   //this is how to use the function pointer
-   int compare = (*compare_items) (item, curr->getItem());
+    //this is how to use the function pointer
+    int compare = (*compare_items) (item, curr->getItem());
 
-   //determine whether the item to be removed is present
-   if (                       )
-   {
-      return;  //item not present
-   }
+    //determine whether the item to be removed is present
+    if (compare != 0)
+    {
+       return;  //item not present
+    }
 
-   //DO THIS
-   //removing the top item (check prev)
-   if (         )
-   {
+    //DO THIS
+    //removing the top item (check prev)
+    if (prev == NULL)
+	{
+		head = curr->getNext();
+		prev = head;
+	}
+    else  //general remove
+    {
+		prev->setNext(curr->getNext());
+	}
 
-
-
-
-   }
-   else  //general remove
-   {
-
-
-
-
-   }
-
-   delete curr;
-   sze--;
+    delete curr;
+    sze--;
 }
 
 template < class T >

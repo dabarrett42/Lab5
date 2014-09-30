@@ -15,75 +15,83 @@ using namespace std;
 
 void addCDs(ListArray<CD>* list, ListBox<CD>* lb)
 {
-   ListArrayIterator<CD>* iter = list->iterator();
-
-   //DO THIS
-   //iterate over and add the cds to the list box (use lb->addItem)
+    ListArrayIterator<CD>* iter = list->iterator();
+    while(iter->hasNext())
+    {
+		lb->addItem(iter->next());
+	}
+    //DO THIS
+    //iterate over and add the cds to the list box (use lb->addItem)
 	
 	
 	
 	
-   delete iter;
+    delete iter;
 }
 
 void deleteCDs(ListArray<CD>* list)
 {
-   ListArrayIterator<CD>* iter = list->iterator();
+    ListArrayIterator<CD>* iter = list->iterator();
+    while(iter->hasNext())
+	{
+		CD* cd = iter->next();
+		delete cd;
+    }
 
-   //DO THIS  
-   //iterate over and delete the cds
+    //DO THIS  
+    //iterate over and delete the cds
 
 
 
 
-   delete iter;
+    delete iter;
 }
 
 int main(int argc, char* argv[])
 {
-   Gtk::Main kit(argc, argv);  //this must be first
-   ListArray<CD>* cds = CD::readCDs("cds.txt");
-   //DO THIS
-   //create the sorted linked list (call it sorted_list)
+	Gtk::Main kit(argc, argv);  //this must be first
+	ListArray<CD>* cds = CD::readCDs("cds.txt");
+	//DO THIS
+	//create the sorted linked list (call it sorted_list)
+	
+	SortedListLinked<CD>* sorted_list = new SortedListLinked<CD>(&CD::compare_items);
+   
 
+	String title("CDs");
+	ListBox<CD>* lstCDs = new ListBox<CD>(&title, sorted_list);
+	addCDs(cds, lstCDs);
 
+	Gtk::Window win;
 
+	win.set_title("Music!");
+	win.set_position(Gtk::WIN_POS_CENTER);
 
-   String title("CDs");
-   ListBox<CD>* lstCDs = new ListBox<CD>(&title, sorted_list);
-   addCDs(cds, lstCDs);
+	//the size of the window
+	int width = 640;
+	int height = 520;
 
-   Gtk::Window win;
+	win.set_size_request(width, height);
+	win.set_resizable(false);  
 
-   win.set_title("Music!");
-   win.set_position(Gtk::WIN_POS_CENTER);
+	//10 rows, 1 column
+	Gtk::Table tbl(10, 1, true);
 
-   //the size of the window
-   int width = 640;
-   int height = 520;
+	Gtk::Button btnRemove("Remove");
 
-   win.set_size_request(width, height);
-   win.set_resizable(false);  
+	//left attach, right attach, top attach, bottom attach
+	tbl.attach(*lstCDs, 0, 1, 0, 9, Gtk::FILL | Gtk::EXPAND, Gtk::FILL | Gtk::EXPAND, 0, 0);
+	tbl.attach(btnRemove, 0, 1, 9, 10, Gtk::FILL | Gtk::EXPAND, Gtk::FILL | Gtk::EXPAND, 0, 0);
+	win.add(tbl);
 
-   //10 rows, 1 column
-   Gtk::Table tbl(10, 1, true);
+	//a button must register with a method that has a void return type
+	btnRemove.signal_clicked().connect(sigc::mem_fun(lstCDs, &ListBox<CD>::removeSelectedItem));
 
-   Gtk::Button btnRemove("Remove");
+	win.show_all_children();
+	Gtk::Main::run(win);
 
-   //left attach, right attach, top attach, bottom attach
-   tbl.attach(*lstCDs, 0, 1, 0, 9, Gtk::FILL | Gtk::EXPAND, Gtk::FILL | Gtk::EXPAND, 0, 0);
-   tbl.attach(btnRemove, 0, 1, 9, 10, Gtk::FILL | Gtk::EXPAND, Gtk::FILL | Gtk::EXPAND, 0, 0);
-   win.add(tbl);
+	deleteCDs(cds);
+	delete cds;
+	delete lstCDs;
 
-   //a button must register with a method that has a void return type
-   btnRemove.signal_clicked().connect(sigc::mem_fun(lstCDs, &ListBox<CD>::removeSelectedItem));
-
-   win.show_all_children();
-   Gtk::Main::run(win);
-
-   deleteCDs(cds);
-   delete cds;
-   delete lstCDs;
-
-   return 0;
+	return 0;
 }
